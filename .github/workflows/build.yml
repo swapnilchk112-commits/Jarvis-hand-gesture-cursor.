@@ -1,0 +1,39 @@
+
+name: Build JARVIS Windows App
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Get project files
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install libraries
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build Windows executable
+        run: |
+          pyinstaller --clean --onefile --console --name JARVIS_Gesture_Cursor main.py
+
+      - name: Upload executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: JARVIS-Windows-EXE
+          path: dist/JARVIS_Gesture_Cursor.exe
+          if-no-files-found: error
+          retention-days: 7
